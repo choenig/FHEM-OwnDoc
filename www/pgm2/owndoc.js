@@ -22,23 +22,37 @@ if( csrfToken == null ){
 //------------------------------------------------------------------------------------------------------
 
 var ownDocLink = "<div class='detLink OwnDoc'>" + 
-                 "<a href='#'>Dokumentation</a>" + 
+                 "<a href='#'>Documentation</a>" + 
                  "</div>";
 
-
 $(document).ready(function() {
-    //$("div#ZWHelp").insertBefore("div.makeTable.internals"); // Move
     $(ownDocLink).insertAfter("div.detLink.devSpecHelp");
-    // if(FW_tp) $("div.img.ZWPepper").appendTo("div#menu");
-    // $("select.set,select.get").each(function(){
-    //     $(this).get(0).setValueFn = function(val) {
-    //         $("div#ZWHelp").html(val);
-    //     }     
-    //     $(this).change(function(){
-    //         FW_queryValue('{ZWave_helpFn("'+zwaveDevice+'","'+$(this).val()+'")}',
-    //                 $(this).get(0));
-    //             });
-    //         });
-    //     });
 
+    $("div.OwnDoc a").each(function() {       // Help on detail window
+        var dev = FW_urlParams.detail;
+        $(this).unbind("click");
+        $(this).attr("href", "#"); // Desktop: show underlined Text
+        $(this).removeAttr("onclick");
+
+        if (!dev) return;
+
+        $(this).click(function(evt) {
+            if($("#OwnDoc").length) {
+                $("#OwnDoc").remove();
+                return;
+            }
+            $("#content").append('<div id="OwnDoc"></div>');
+            FW_cmd(FW_root+'?cmd={AttrVal("'+dev+'","OwnDocumentation","")}&XHR=1', function(data) {
+                if(!$("#OwnDoc").length) {
+                    // FHEM slow, user clicked again, #68166
+                    return;
+                }
+                if (data && data.length > 1) {
+                    $("#OwnDoc").html(data);
+                } else {
+                    $("#OwnDoc").html("No OwnDoc-Documentation found.");
+                }
+            });
+        });
+    });
 });

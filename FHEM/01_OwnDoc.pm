@@ -13,6 +13,8 @@ sub OwnDoc_Initialize($)
 
     $hash->{DefFn}     = "OwnDoc_DefFn";
     $hash->{UndefFn}   = "OwnDoc_UndefFn";
+    
+    addToAttrList("OwnDocumentation:textField-long");
 }
 
 ###################################
