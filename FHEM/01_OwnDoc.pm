@@ -13,7 +13,8 @@ sub OwnDoc_Initialize($)
 
     $hash->{DefFn}     = "OwnDoc_DefFn";
     $hash->{UndefFn}   = "OwnDoc_UndefFn";
-    
+    $hash->{GetFn}     = "OwnDoc_GetFn";
+
     addToAttrList("OwnDocumentation:textField-long");
 }
 
@@ -22,6 +23,10 @@ sub OwnDoc_DefFn($$)
 {
     my ($hash, $def) = @_;
     my @a = split("[ \t][ \t]*", $def);
+
+    eval { require Text::WikiFormat; };
+    return "Please install Perl Text::WikiFormat to use module OwnDoc"
+        if ($@);
 
     # check syntax
     if(int(@a) != 2) {
@@ -48,6 +53,37 @@ sub OwnDoc_UndefFn($$)
     return undef;
 }
 
+sub OwnDoc_GetFn($$@)
+{
+	my ($hash, $name, $opt, @args) = @_;
+    return "\"get $name\" needs at least one argument" unless(defined($opt));
+
+    if($opt eq "wiki" || $opt eq "html") 
+    {
+        if (int(@args) != 1) {
+            return "usage: \"get $name $opt DEVICE\"";
+        }
+        my $dev = $args[0];
+        my $wikitext = AttrVal($dev, 'OwnDocumentation', "");
+        
+        if ($opt eq "wiki") {
+            return $wikitext;
+        }
+        
+        my %tags = (
+            strong_tag     => qr/\*(.+?)\*/,
+            emphasized_tag => qr|(?<!<)/(.+?)/|,
+        );
+        my $htmltext = Text::WikiFormat::format($wikitext, \%tags, {
+            implicit_links => 0
+        });
+        return $htmltext;
+    }
+    else
+    {
+        return "Unknown argument $opt, choose one of wiki html";
+    }
+}
 
 #sub OwnDoc_fhemwebFn($$$$)
 #{
