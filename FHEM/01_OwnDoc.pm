@@ -68,16 +68,9 @@ sub OwnDoc_GetFn($$@)
         
         if ($opt eq "wiki") {
             return $wikitext;
+        } else {
+            return OwnDoc_toHtml($wikitext);
         }
-        
-        my %tags = (
-            strong_tag     => qr/\*(.+?)\*/,
-            emphasized_tag => qr|(?<!<)/(.+?)/|,
-        );
-        my $htmltext = Text::WikiFormat::format($wikitext, \%tags, {
-            implicit_links => 0
-        });
-        return $htmltext;
     }
     else
     {
@@ -85,6 +78,20 @@ sub OwnDoc_GetFn($$@)
     }
 }
 
+sub OwnDoc_toHtml($)
+{
+    my ($wikitext) = @_;
+
+    my %tags = (
+        strong_tag     => qr/\*(.+?)\*/,
+        emphasized_tag => qr|(?<!<)/(.+?)/|,
+    );
+    my $htmltext = Text::WikiFormat::format($wikitext, \%tags, {
+        implicit_links => 0
+    });
+    return $htmltext;
+
+}
 
 
 1;
