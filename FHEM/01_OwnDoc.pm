@@ -14,6 +14,7 @@ sub OwnDoc_Initialize($)
     $hash->{DefFn}     = "OwnDoc_DefFn";
     $hash->{UndefFn}   = "OwnDoc_UndefFn";
     $hash->{GetFn}     = "OwnDoc_GetFn";
+    $hash->{AttrList}  = "OwnDoc_addLinks:0,1";
 
     addToAttrList(".OwnDocumentation:textField-long");
 }
@@ -69,7 +70,11 @@ sub OwnDoc_GetFn($$@)
         if ($opt eq "wiki") {
             return $wikitext;
         } else {
-            return OwnDoc_toHtml($wikitext);
+            my $htmltext = OwnDoc_toHtml($wikitext);
+            if (AttrVal($name, "OwnDoc_addLinks", "1") eq "1") {
+                $htmltext = FW_addLinks($htmltext);
+            }
+            return $htmltext;
         }
     }
     else
