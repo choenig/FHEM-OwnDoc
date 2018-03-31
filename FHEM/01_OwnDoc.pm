@@ -40,6 +40,7 @@ sub OwnDoc_DefFn($$)
         return "Only one instance of OwnDoc is allowed per FHEM installation. Delete the old one first.";
     }
 
+    $hash->{STATE}               = 'Initialized';
     $data{FWEXT}{OwnDoc}{SCRIPT} = "owndoc.js";
     return undef;
 }
