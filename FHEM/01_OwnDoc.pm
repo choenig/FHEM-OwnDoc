@@ -14,6 +14,7 @@ sub OwnDoc_Initialize($)
     $hash->{DefFn}     = "OwnDoc_DefFn";
     $hash->{UndefFn}   = "OwnDoc_UndefFn";
     $hash->{GetFn}     = "OwnDoc_GetFn";
+    $hash->{SetFn}     = "OwnDoc_SetFn";
 
     addToAttrList("OwnDocumentation:textField-long");
 }
@@ -64,7 +65,9 @@ sub OwnDoc_GetFn($$@)
             return "usage: \"get $name $opt DEVICE\"";
         }
         my $dev = $args[0];
-        my $wikitext = AttrVal($dev, 'OwnDocumentation', "");
+        
+        my $reading = $dev;
+        my $wikitext = ReadingsVal($name, $reading, "");
         
         if ($opt eq "wiki") {
             return $wikitext;
@@ -93,6 +96,28 @@ sub OwnDoc_toHtml($)
 
 }
 
+sub OwnDoc_SetFn($$@)
+{
+    my ($hash, $name, $cmd, @args) = @_;
+   
+    return "\"set $name\" needs at least one argument" unless(defined($cmd));
+    
+    if ($cmd eq "wiki") {
+        return "Bah: @args";
+        if (int(@args) < 1) {
+            return "usage: \"set $name $cmd DEVICE\"";
+        }
+        my ($dev, @doc) = @args;
+        
+        my $reading = $dev;
+        my $value = join(" ", @doc);
+        readingsSingleUpdate($hash, $reading, $value, 1);
+
+        return undef;
+    }
+   
+    return "Unknown argument $cmd, choose one of wiki";
+}
 
 1;
 
