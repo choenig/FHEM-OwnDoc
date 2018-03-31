@@ -104,7 +104,7 @@ $(document).ready(function() {
                 var doc=$("#OwnDocTextEdit").val();
                 doc = doc.replace(/\n/g, '\u2424' );
 
-                FW_cmd(FW_root+'?XHR=1&cmd.=set TYPE=OwnDoc wiki '+dev+' ' + doc, function(data) {
+                FW_cmd(FW_root+'?XHR=1&cmd.=attr '+dev+' OwnDocumentation ' + doc, function(data) {
                     if (data.length > 0) {
                         alert(data);
                     } else {
