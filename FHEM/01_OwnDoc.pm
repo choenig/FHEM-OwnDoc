@@ -85,14 +85,6 @@ sub OwnDoc_GetFn($$@)
     }
 }
 
-#sub OwnDoc_fhemwebFn($$$$)
-#{
-#  my ($FW_wname, $d, $room, $pageHash) = @_; # pageHash is set for summaryFn.
-#
-#  my $js = "$FW_ME/pgm2/owndoc.js";
-#
-#  return "<script type='text/javascript' src='$js'></script>"
-#}
 
 
 1;
