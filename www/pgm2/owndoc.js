@@ -38,21 +38,8 @@ function OwnDoc_updateContent(dev)
 }
 
 //------------------------------------------------------------------------------------------------------
-// Determine csrfToken
-//------------------------------------------------------------------------------------------------------
-
-// var req = new XMLHttpRequest();
-// req.open('GET', document.location.href, false);
-// req.send(null);
-// var csrfToken = req.getResponseHeader('X-FHEM-csrfToken');
-// if( csrfToken == null ){
-//     csrfToken = "null";
-// }
-
-//------------------------------------------------------------------------------------------------------
 // insert link
 //------------------------------------------------------------------------------------------------------
-
 $(document).ready(function() {
     $("div.detLink.devSpecHelp").after(
         "<div class='detLink OwnDoc'>" + 
