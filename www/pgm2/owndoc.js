@@ -102,6 +102,8 @@ $(document).ready(function() {
                 if (cm) $("#OwnDocTextEdit").val(cm.getValue());
                 var doc=$("#OwnDocTextEdit").val();
                 doc = doc.replace(/\n/g, '\u2424' );
+                doc = doc.replace(/;/g,  ';;' );
+                doc = encodeURIComponent(doc);
 
                 FW_cmd(FW_root+'?XHR=1&cmd.=attr '+dev+' .OwnDocumentation ' + doc, function(data) {
                     if (data.length > 0) {

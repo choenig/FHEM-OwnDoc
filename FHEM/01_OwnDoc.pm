@@ -7,6 +7,9 @@ use warnings;
 use vars qw($FW_ME);
 use SetExtensions;
 
+my $OwnDoc_hasTextWikiFormat = 1;
+my $OwnDoc_hasTextMarkdown   = 1;
+
 sub OwnDoc_Initialize($)
 {
     my ($hash) = @_;
@@ -14,9 +17,15 @@ sub OwnDoc_Initialize($)
     $hash->{DefFn}     = "OwnDoc_DefFn";
     $hash->{UndefFn}   = "OwnDoc_UndefFn";
     $hash->{GetFn}     = "OwnDoc_GetFn";
-    $hash->{AttrList}  = "OwnDoc_addLinks:0,1";
+    $hash->{AttrList}  = "OwnDoc_addLinks:0,1 OwnDoc_format:WikiFormat,Markdown";
 
     addToAttrList(".OwnDocumentation:textField-long");
+    
+    eval "use Text::WikiFormat";
+    $OwnDoc_hasTextWikiFormat = 0 if($@);
+
+    eval "use Text::Markdown";
+    $OwnDoc_hasTextMarkdown = 0 if($@);
 }
 
 ###################################
@@ -25,9 +34,9 @@ sub OwnDoc_DefFn($$)
     my ($hash, $def) = @_;
     my @a = split("[ \t][ \t]*", $def);
 
-    eval { require Text::WikiFormat; };
-    return "Please install Perl Text::WikiFormat to use module OwnDoc"
-        if ($@);
+    if (!$OwnDoc_hasTextWikiFormat && !$OwnDoc_hasTextMarkdown) {
+        return "Please install Text::WikiFormat or Text::Markdown to use module OwnDoc"
+    }
 
     # check syntax
     if(int(@a) != 2) {
@@ -40,7 +49,10 @@ sub OwnDoc_DefFn($$)
         return "Only one instance of OwnDoc is allowed per FHEM installation. Delete the old one first.";
     }
 
-    $hash->{STATE}               = 'Initialized';
+    $hash->{HAS_TextWikiFormat} = $OwnDoc_hasTextWikiFormat;
+    $hash->{HAS_TextMarkdown  } = $OwnDoc_hasTextMarkdown;
+    $hash->{STATE}              = 'Initialized';
+
     $data{FWEXT}{OwnDoc}{SCRIPT} = "owndoc.js";
     return undef;
 }
@@ -71,7 +83,7 @@ sub OwnDoc_GetFn($$@)
         if ($opt eq "wiki") {
             return $wikitext;
         } else {
-            my $htmltext = OwnDoc_toHtml($wikitext);
+            my $htmltext = OwnDoc_toHtml($name, $wikitext);
             if (AttrVal($name, "OwnDoc_addLinks", "1") eq "1") {
                 $htmltext = FW_addLinks($htmltext);
             }
@@ -84,19 +96,42 @@ sub OwnDoc_GetFn($$@)
     }
 }
 
-sub OwnDoc_toHtml($)
+sub OwnDoc_toHtml($$)
 {
-    my ($wikitext) = @_;
+    my ($name, $wikitext) = @_;
+    
+    my $defaultFormat = "";
+    $defaultFormat = "WikiFormat" if ($OwnDoc_hasTextWikiFormat);
+    $defaultFormat = "Markdown"   if ($OwnDoc_hasTextMarkdown);
+    
+    my $selectedFormat = AttrVal($name, "OwnDoc_format", $defaultFormat);
+    if ($selectedFormat eq "") {
+        return "Error: could not determine valid OwnDoc_format, please install appropriate modules."
+    }
+    if ($selectedFormat eq "WikiFormat" && !$OwnDoc_hasTextWikiFormat ||
+        $selectedFormat eq "Markdown"   && !$OwnDoc_hasTextMarkdown)
+    {
+        return "Error: OwnDoc_format '$selectedFormat' not supported."
+    }
+    
+    if ($selectedFormat eq "WikiFormat") {
+        my %tags = (
+            strong_tag     => qr/\*(.+?)\*/,
+            emphasized_tag => qr|(?<!<)/(.+?)/|,
+        );
+        my $htmltext = Text::WikiFormat::format($wikitext, \%tags, {
+            implicit_links => 0
+        });
+        return $htmltext;
+    }
 
-    my %tags = (
-        strong_tag     => qr/\*(.+?)\*/,
-        emphasized_tag => qr|(?<!<)/(.+?)/|,
-    );
-    my $htmltext = Text::WikiFormat::format($wikitext, \%tags, {
-        implicit_links => 0
-    });
-    return $htmltext;
-
+    if ($selectedFormat eq "Markdown") {
+        my $markdown = Text::Markdown->new;
+        my $htmltext = $markdown->markdown($wikitext);
+        return $htmltext;
+    }
+    
+    return "Error: Could not determine valid OwnDoc_format";
 }
 
 
