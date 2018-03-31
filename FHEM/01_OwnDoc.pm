@@ -15,7 +15,7 @@ sub OwnDoc_Initialize($)
     $hash->{UndefFn}   = "OwnDoc_UndefFn";
     $hash->{GetFn}     = "OwnDoc_GetFn";
 
-    addToAttrList("OwnDocumentation:textField-long");
+    addToAttrList(".OwnDocumentation:textField-long");
 }
 
 ###################################
@@ -64,7 +64,7 @@ sub OwnDoc_GetFn($$@)
             return "usage: \"get $name $opt DEVICE\"";
         }
         my $dev = $args[0];
-        my $wikitext = AttrVal($dev, 'OwnDocumentation', "");
+        my $wikitext = AttrVal($dev, '.OwnDocumentation', "");
         
         if ($opt eq "wiki") {
             return $wikitext;
