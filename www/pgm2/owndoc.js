@@ -6,7 +6,7 @@
 //# Christian Hoenig
 
 //------------------------------------------------------------------------------------------------------
-// updates the content from the device for the given dev
+// updates the content of the divs for the given dev
 //------------------------------------------------------------------------------------------------------
 function OwnDoc_updateContent(dev) 
 {
@@ -36,7 +36,6 @@ function OwnDoc_updateContent(dev)
         }
     });
 }
-
 
 //------------------------------------------------------------------------------------------------------
 // Determine csrfToken
