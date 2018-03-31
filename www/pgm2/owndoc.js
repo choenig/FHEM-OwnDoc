@@ -116,7 +116,6 @@ $(document).ready(function() {
 
             });
             $("#OwnDocCancel").click(function(evt) {
-                $("#OwnDocContent").html("...");
                 $("#OwnDocEdit").show();
                 $("#OwnDocContent").show();
                 $("#OwnDocTextEditDiv").hide();
