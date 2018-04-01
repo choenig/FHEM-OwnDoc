@@ -1,0 +1,16 @@
+#!/bin/bash
+
+CONTROLFILE=controls_owndoc.txt
+rm -f $CONTROLFILE
+
+find ./FHEM/ ./www/ -type f \
+	|sort \
+	|xargs ls -l --time-style +%Y-%m-%d_%H:%M:%S \
+	|awk '{print "UPD", $6, $5, substr($7, 3)}' \
+	>> $CONTROLFILE
+
+# CHANGED file
+#echo "OwnDoc - last change:" > CHANGED
+#echo $(date +"%Y-%m-%d") >> CHANGED
+#echo " - $(git log -1 --pretty=%B)" >> CHANGED
+
