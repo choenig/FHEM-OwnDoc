@@ -22,8 +22,7 @@ function OwnDoc_updateContent(dev)
 
         if (data && data.length > 1) {
             $("#OwnDocContent").html(data);
-            var off = $("#OwnDocContent").position().top-20;
-            $('body, html').animate({scrollTop:off}, 500);
+            OwnDoc_scrollToContent();
         } else {
             $("#OwnDocContent").html("No OwnDoc-Documentation found.");
         }
@@ -40,6 +39,12 @@ function OwnDoc_updateContent(dev)
             $("#OwnDocTextEdit").val("");
         }
     });
+}
+
+function OwnDoc_scrollToContent()
+{
+    var off = $("#OwnDoc").position().top-20;
+    $('body, html').animate({scrollTop:off}, 500);
 }
 
 //------------------------------------------------------------------------------------------------------
