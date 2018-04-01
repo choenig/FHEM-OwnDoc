@@ -13,28 +13,35 @@ function OwnDoc_cmd(cmd, fnc)
 //------------------------------------------------------------------------------------------------------
 // updates the content of the divs for the given dev
 //------------------------------------------------------------------------------------------------------
-function OwnDoc_updateContent(dev) 
+function OwnDoc_updateHtmlContent(dev) 
 {
     OwnDoc_cmd('get TYPE=OwnDoc html ' + dev, function(data) {
         if(!$("#OwnDocContent").length) {
             return; // FHEM slow, user clicked again, #68166
         }
-
-        if (data && data.length > 1) {
+        if (data && $.trim(data).length > 0) {
             $("#OwnDocContent").html(data);
             OwnDoc_scrollToContent();
         } else {
             $("#OwnDocContent").html("No OwnDoc-Documentation found.");
         }
     });
+}
 
+function OwnDoc_updateWikiContent(dev, codeMirror) 
+{
     OwnDoc_cmd('get TYPE=OwnDoc wiki ' + dev, function(data) {
         if(!$("#OwnDocTextEdit").length) {
             return; // FHEM slow, user clicked again, #68166
         }
-        if (data && data.length > 1) {
-            // data = data.replace(/\u2424/g, '<br/>');
-            $("#OwnDocTextEdit").val(data);
+        if (data && $.trim(data).length > 0) {
+            if(codeMirror) {
+                codeMirror.setValue(data)
+                $("#OwnDocTextEdit").val(codeMirror.getValue());
+            } else {
+                $("#OwnDocTextEdit").val(data);
+            }
+            OwnDoc_scrollToContent();
         } else {
             $("#OwnDocTextEdit").val("");
         }
@@ -50,14 +57,15 @@ function OwnDoc_scrollToContent()
 //------------------------------------------------------------------------------------------------------
 // insert link
 //------------------------------------------------------------------------------------------------------
-$(document).ready(function() {
+$(document).ready(function()
+{
     $("div.detLink.devSpecHelp").after(
         "<div class='detLink OwnDoc'>" + 
         "<a href='#'>Documentation</a>" + 
         "</div>"
     );
 
-    $("div.OwnDoc a").each(function() {       // Help on detail window
+    $("div.OwnDoc a").each(function() {
         $(this).unbind("click");
         $(this).attr("href", "#"); // Desktop: show underlined Text
         $(this).removeAttr("onclick");
@@ -67,7 +75,7 @@ $(document).ready(function() {
 
         $(this).click(function(evt) {
             // toggle
-            if($("#OwnDocContent").length) {
+            if($("#OwnDoc").length) {
                 $("#OwnDoc").remove();
                 return;
             }
@@ -75,12 +83,12 @@ $(document).ready(function() {
             // init structures
             $("#content").append(
                 '<div id="OwnDoc">' +
-                    '<div id="OwnDocContent">...</div>' +
                     '<a id="OwnDocEdit" href="#">Edit</a>' +
+                    '<div id="OwnDocContent">...</div>' +
                     '<div id="OwnDocTextEditDiv" style="display:none">'+
-                        '<textarea id="OwnDocTextEdit" rows="25" cols="60" style="width:99%"/>'+
                         '<a id="OwnDocSave" href="#">Save</a>&nbsp;&nbsp;&nbsp;' +
                         '<a id="OwnDocCancel" href="#">Cancel</a>' +
+                        '<textarea id="OwnDocTextEdit" rows="25" cols="60" style="width:99%"/>'+
                     '</div>' +
                 '</div>'
             );
@@ -91,6 +99,7 @@ $(document).ready(function() {
             }
             
             $("#OwnDocEdit").click(function(evt) {
+                OwnDoc_updateWikiContent(dev, cm);
                 $("#OwnDocEdit").hide();
                 $("#OwnDocContent").hide();
                 $("#OwnDocTextEditDiv").show();
@@ -98,6 +107,7 @@ $(document).ready(function() {
             $("#OwnDocSave").click(function(evt) {
                 if (cm) $("#OwnDocTextEdit").val(cm.getValue());
                 var doc=$("#OwnDocTextEdit").val();
+                doc = $.trim(doc);
                 doc = doc.replace(/\n/g, '\u2424' );
                 doc = doc.replace(/;/g,  ';;' );
                 doc = encodeURIComponent(doc);
@@ -109,7 +119,7 @@ $(document).ready(function() {
                         $("#OwnDocEdit").show();
                         $("#OwnDocContent").show();
                         $("#OwnDocTextEditDiv").hide();
-                        OwnDoc_updateContent(dev);
+                        OwnDoc_updateHtmlContent(dev);
                     }
                 });
 
@@ -118,9 +128,10 @@ $(document).ready(function() {
                 $("#OwnDocEdit").show();
                 $("#OwnDocContent").show();
                 $("#OwnDocTextEditDiv").hide();
+                OwnDoc_scrollToContent();
             });
 
-            OwnDoc_updateContent(dev);
+            OwnDoc_updateHtmlContent(dev);
         });
     });
 });
