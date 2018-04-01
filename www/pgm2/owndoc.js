@@ -5,12 +5,17 @@
 //########################################################################################
 //# Christian Hoenig
 
+function OwnDoc_cmd(cmd, fnc)
+{
+    FW_cmd(FW_root+'?XHR=1&cmd='+cmd, fnc);
+}
+
 //------------------------------------------------------------------------------------------------------
 // updates the content of the divs for the given dev
 //------------------------------------------------------------------------------------------------------
 function OwnDoc_updateContent(dev) 
 {
-    FW_cmd(FW_root+'?cmd=get TYPE=OwnDoc html '+dev+'&XHR=1', function(data) {
+    OwnDoc_cmd('get TYPE=OwnDoc html ' + dev, function(data) {
         if(!$("#OwnDocContent").length) {
             return; // FHEM slow, user clicked again, #68166
         }
@@ -24,7 +29,7 @@ function OwnDoc_updateContent(dev)
         }
     });
 
-    FW_cmd(FW_root+'?cmd=get TYPE=OwnDoc wiki '+dev+'&XHR=1', function(data) {
+    OwnDoc_cmd('get TYPE=OwnDoc wiki ' + dev, function(data) {
         if(!$("#OwnDocTextEdit").length) {
             return; // FHEM slow, user clicked again, #68166
         }
@@ -92,7 +97,7 @@ $(document).ready(function() {
                 doc = doc.replace(/;/g,  ';;' );
                 doc = encodeURIComponent(doc);
 
-                FW_cmd(FW_root+'?XHR=1&cmd.=attr '+dev+' .OwnDocumentation ' + doc, function(data) {
+                OwnDoc_cmd('attr ' + dev + ' .OwnDocumentation ' + doc, function(data) {
                     if (data.length > 0) {
                         alert(data);
                     } else {
