@@ -21,10 +21,10 @@ function OwnDoc_updateHtmlContent(dev)
         }
         if (data && $.trim(data).length > 0) {
             $("#OwnDocContent").html(data);
-            OwnDoc_scrollToContent();
         } else {
             $("#OwnDocContent").html("No OwnDoc-Documentation found.");
         }
+        OwnDoc_scrollToContent("#OwnDocContent");
     });
 }
 
