@@ -45,7 +45,7 @@ sub OwnDoc_Initialize($)
     $hash->{DefFn}     = "OwnDoc_DefFn";
     $hash->{UndefFn}   = "OwnDoc_UndefFn";
     $hash->{GetFn}     = "OwnDoc_GetFn";
-    $hash->{AttrList}  = "OwnDoc_addLinks:0,1 OwnDoc_format:WikiFormat,Markdown";
+    $hash->{AttrList}  = "OwnDoc_addLinks:0,1 OwnDoc_showHelpInHeader:0,1 OwnDoc_format:WikiFormat,Markdown";
 
     addToAttrList(".OwnDocumentation:textField-long");
     
@@ -125,9 +125,12 @@ sub OwnDoc_GetFn($$@)
             return $htmltext;
         }
     }
+    elsif ($opt eq "showHelpInHeader") {
+        return AttrVal($name, "OwnDoc_showHelpInHeader", "0");
+    }
     else
     {
-        return "Unknown argument $opt, choose one of wiki html";
+        return "Unknown argument $opt, choose one of wiki html showHelpInHeader";
     }
 }
 
