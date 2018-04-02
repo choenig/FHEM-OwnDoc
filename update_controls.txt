@@ -10,7 +10,7 @@ find ./FHEM/ ./www/ -type f \
 	>> $CONTROLFILE
 
 # CHANGED file
-#echo "OwnDoc - last change:" > CHANGED
-#echo $(date +"%Y-%m-%d") >> CHANGED
-#echo " - $(git log -1 --pretty=%B)" >> CHANGED
+echo "OwnDoc - last change:" > CHANGED
+echo $(date +"%Y-%m-%d") >> CHANGED
+echo " - $(git log -1 --pretty=%B)" >> CHANGED
 
