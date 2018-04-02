@@ -1,2 +1,3 @@
-2018-04-01
- - OwnDoc: Initial version
+OwnDoc - last change:
+2018-04-02
+ - always scroll to #OwnDoc, even if no documentation was found
